@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"net/http"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -81,11 +82,13 @@ var statusCmd = &cobra.Command{
 }
 
 func refreshStatus() (Status, error) {
-	file, err := os.Open("./samples/status.json")
+	resp, err := http.Get(fmt.Sprintf("%s%s", baseURL, statusEndpoint))
 	if err != nil {
-		return Status{}, err
+		return Status{}, nil
 	}
-	data, err := io.ReadAll(file)
+
+	defer resp.Body.Close()
+	data, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return Status{}, err
 	}
