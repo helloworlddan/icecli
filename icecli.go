@@ -1,11 +1,7 @@
 package main
 
-import "fmt"
-
-const (
-	version = "0.0.1"
-)
+import "github.com/helloworlddan/icecli/cmd"
 
 func main() {
-	fmt.Printf("icecli version %s\n", version)
+	cmd.Execute()
 }
