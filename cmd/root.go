@@ -8,11 +8,7 @@ import (
 )
 
 const (
-	version        = "0.0.1"
-	baseURL        = ""
-	endpointTrips  = ""
-	endpointStatus = ""
-	endpointConfig = ""
+	baseURL = "https://iceportal.de/api1/rs"
 )
 
 var cfgFile string
