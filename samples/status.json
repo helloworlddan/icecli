@@ -1,0 +1,22 @@
+{
+    "connection": true,
+    "serviceLevel": "AVAILABLE_SERVICE",
+    "gpsStatus": "VALID",
+    "internet": "HIGH",
+    "latitude": 49.624525,
+    "longitude": 11.0071895,
+    "tileY": -42,
+    "tileX": 100,
+    "series": "412",
+    "serverTime": 1665488184787,
+    "speed": 140.0,
+    "trainType": "ICE",
+    "tzn": "ICE9008",
+    "wagonClass": "SECOND",
+    "connectivity": {
+        "currentState": "HIGH",
+        "nextState": "UNSTABLE",
+        "remainingTimeSeconds": 1800
+    },
+    "bapInstalled": true
+}
