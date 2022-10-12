@@ -1,0 +1,5 @@
+icecli status 
+
+icecli status --filter "speed,connectivity" --output table|csv
+
+icecli trip eta --destination "Hamburg HBF"
