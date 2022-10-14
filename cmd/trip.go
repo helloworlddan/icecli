@@ -123,6 +123,12 @@ var tripCmd = &cobra.Command{
 				fmt.Printf("%s", t.NextStop)
 			case "PROGRESS":
 				fmt.Printf("%s", t.Progress)
+			case "ARRIVING":
+				fmt.Printf("%s", t.TimeToArrival)
+			case "REMAINING DISTANCE":
+				fmt.Printf("%s", t.RemainingDistance)
+			case "ARRIVAL TRACK":
+				fmt.Printf("%s", t.ArrivalTrack)
 			default:
 				fail(errors.New("unknown filter field"))
 			}
