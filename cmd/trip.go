@@ -23,10 +23,12 @@ type Envelope struct {
 }
 
 type Trip struct {
-	TrainType   string   `json:"trainType"`
-	TrainNumber string   `json:"vzn"`
-	StopInfo    StopInfo `json:"stopInfo"`
-	Stops       []Stop   `json:"stops"`
+	TrainType            string   `json:"trainType"`
+	TrainNumber          string   `json:"vzn"`
+	StopInfo             StopInfo `json:"stopInfo"`
+	Stops                []Stop   `json:"stops"`
+	ActualPosition       int      `json:"actualPosition"`
+	DistanceFromLastStop int      `json:"distanceFromLastStop"`
 
 	Train              string `header:"Train"`
 	YourDestination    string `header:"Your Destination"`
@@ -35,6 +37,8 @@ type Trip struct {
 	StopsToDestination int
 	Progress           string `header:"Progress"`
 	TimeToArrival      string `header:"Arriving"`
+	RemainingDistance  string `header:"Remaining Distance"`
+	ArrivalTrack       string `header:"Arrival Track"`
 }
 
 type StopInfo struct {
@@ -215,6 +219,26 @@ func refreshTrip() (Trip, error) {
 			return "GET OUT NOW"
 		}
 		return formatTimeDelta(remainingDuration)
+	}()
+	envelope.Trip.RemainingDistance = func() string {
+		traveledDistance := envelope.Trip.ActualPosition + envelope.Trip.DistanceFromLastStop
+		for _, stop := range envelope.Trip.Stops {
+			if stop.Station.Name == envelope.Trip.YourDestination {
+				remainingMeters := stop.Info.DistanceFromStart - traveledDistance
+				roundedKilometers := remainingMeters / 1000
+				return fmt.Sprintf("%d km", roundedKilometers)
+			}
+		}
+
+		return "-"
+	}()
+	envelope.Trip.ArrivalTrack = func() string {
+		for _, stop := range envelope.Trip.Stops {
+			if stop.Station.Name == envelope.Trip.YourDestination {
+				return stop.Track.Actual
+			}
+		}
+		return "-"
 	}()
 
 	return envelope.Trip, nil

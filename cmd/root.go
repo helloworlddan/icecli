@@ -47,5 +47,5 @@ func unixMillisToTime(millis uint64) time.Time {
 }
 
 func formatTimeDelta(d time.Duration) string {
-	return strings.Split(d.String(), ".")[0]
+	return fmt.Sprintf("%ss", strings.Split(d.String(), ".")[0])
 }

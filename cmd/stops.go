@@ -13,10 +13,11 @@ import (
 )
 
 type StopView struct {
-	Station       string `header:"Station"`
-	Track         string `header:"Track"`
-	TimeToArrival string `header:"Arriving"`
-	DelayReasons  string `header:"Reasons for delay"`
+	Station           string `header:"Station"`
+	Track             string `header:"Track"`
+	TimeToArrival     string `header:"Arriving"`
+	RemainingDistance string `header:"Remaining Distance"`
+	DelayReasons      string `header:"Reasons for delay"`
 }
 
 var stopsCmd = &cobra.Command{
@@ -30,22 +31,42 @@ var stopsCmd = &cobra.Command{
 		}
 
 		stopViews := []StopView{}
-		for _, stop := range t.Stops {
+		for idx, stop := range t.Stops {
 			stopView := StopView{}
 			stopView.Station = stop.Station.Name
 			stopView.Track = stop.Track.Actual
 			stopView.TimeToArrival = func() string {
 				arrivalTime := unixMillisToTime(stop.TimeTable.ActualArrivalTime)
 				remainingDuration := time.Until(arrivalTime)
+				if idx == 0 {
+					return ""
+				}
 				if remainingDuration < 0 {
 					return "-"
 				}
-				if remainingDuration < time.Duration(time.Minute*3) {
+				if stop.Station.Name == t.YourDestination && remainingDuration < time.Duration(time.Minute*3) {
 					return "GET OUT NOW"
 				}
 				return formatTimeDelta(remainingDuration)
 			}()
+			stopView.RemainingDistance = func() string {
+				if idx == 0 {
+					return ""
+				}
+				// Is this actually correct or should ActualPosition be replaced with info from the last stop?
+				traveledDistance := t.ActualPosition + t.DistanceFromLastStop
+				remainingMeters := stop.Info.DistanceFromStart - traveledDistance
+				roundedKilometers := remainingMeters / 1000
+				if roundedKilometers <= 0 {
+					return "-"
+				}
+
+				return fmt.Sprintf("%d km", roundedKilometers)
+			}()
 			stopView.DelayReasons = func() string {
+				if idx == 0 {
+					return ""
+				}
 				reasons := []string{}
 				for _, r := range stop.DelayReasons {
 					reasons = append(reasons, r.Message)
@@ -83,6 +104,12 @@ var stopsCmd = &cobra.Command{
 					arrivalDurations = append(arrivalDurations, stopView.Track)
 				}
 				fmt.Println(strings.Join(arrivalDurations, ","))
+			case "REMAINING DISTANCE":
+				distances := []string{}
+				for _, stopView := range stopViews {
+					distances = append(distances, stopView.RemainingDistance)
+				}
+				fmt.Println(strings.Join(distances, ","))
 			case "REASONS FOR DELAY":
 				delayReasons := []string{}
 				for _, stopView := range stopViews {
@@ -104,7 +131,7 @@ var stopsCmd = &cobra.Command{
 		}
 		if Output == "csv" {
 			for _, stopView := range stopViews {
-				fmt.Printf("%s,%s,%s,%s\n", stopView.Station, stopView.Track, stopView.TimeToArrival, stopView.DelayReasons)
+				fmt.Printf("%s,%s,%s,%s,%s\n", stopView.Station, stopView.Track, stopView.TimeToArrival, stopView.RemainingDistance, stopView.DelayReasons)
 			}
 			return
 		}
