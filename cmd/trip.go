@@ -7,6 +7,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/spf13/cobra"
 
@@ -33,6 +34,7 @@ type Trip struct {
 	NextStop           string `header:"Next Stop"`
 	StopsToDestination int
 	Progress           string `header:"Progress"`
+	TimeToArrival      string `header:"Arriving"`
 }
 
 type StopInfo struct {
@@ -40,7 +42,7 @@ type StopInfo struct {
 	ActualNext        string `json:"actualNext"`
 	ActualLast        string `json:"actualLast"`
 	ActualLastStarted string `json:"actualLastStarted"`
-	FinalStationName  string `header:"FD" json:"finalStationName"`
+	FinalStationName  string `json:"finalStationName"`
 }
 
 type Stop struct {
@@ -198,6 +200,21 @@ func refreshTrip() (Trip, error) {
 			}
 		}
 		return fmt.Sprintf("%d/%d", departedStops, envelope.Trip.StopsToDestination)
+	}()
+	envelope.Trip.TimeToArrival = func() string {
+		var arrival uint64
+		for _, stop := range envelope.Trip.Stops {
+			if stop.Station.Name == envelope.Trip.YourDestination {
+				arrival = stop.TimeTable.ActualArrivalTime
+				break
+			}
+		}
+		arrivalTime := unixMillisToTime(arrival)
+		remainingDuration := time.Until(arrivalTime)
+		if remainingDuration < time.Duration(time.Minute*3) {
+			return "GET OUT NOW"
+		}
+		return formatTimeDelta(remainingDuration)
 	}()
 
 	return envelope.Trip, nil

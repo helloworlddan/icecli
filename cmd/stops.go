@@ -40,7 +40,10 @@ var stopsCmd = &cobra.Command{
 				if remainingDuration < 0 {
 					return "-"
 				}
-				return remainingDuration.String()
+				if remainingDuration < time.Duration(time.Minute*3) {
+					return "GET OUT NOW"
+				}
+				return formatTimeDelta(remainingDuration)
 			}()
 			stopView.DelayReasons = func() string {
 				reasons := []string{}

@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -43,4 +44,8 @@ func init() {
 func unixMillisToTime(millis uint64) time.Time {
 	seconds := int64(millis / 1000)
 	return time.Unix(seconds, 0)
+}
+
+func formatTimeDelta(d time.Duration) string {
+	return strings.Split(d.String(), ".")[0]
 }
