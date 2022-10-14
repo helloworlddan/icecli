@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/spf13/cobra"
 )
@@ -11,7 +12,10 @@ const (
 	baseURL = "https://iceportal.de/api1/rs"
 )
 
-var cfgFile string
+var (
+	Output string
+	Filter string
+)
 
 var rootCmd = &cobra.Command{
 	Use:   "icecli",
@@ -29,4 +33,14 @@ func Execute() {
 func fail(err error) {
 	fmt.Fprintf(os.Stderr, "error: %v\n", err)
 	os.Exit(1)
+}
+
+func init() {
+	tripCmd.PersistentFlags().StringVarP(&Output, "output", "o", "table", "Output format: table or csv")
+	tripCmd.PersistentFlags().StringVarP(&Filter, "filter", "f", "", "Filter available fields")
+}
+
+func unixMillisToTime(millis uint64) time.Time {
+	seconds := int64(millis / 1000)
+	return time.Unix(seconds, 0)
 }

@@ -87,12 +87,12 @@ type Info struct {
 }
 
 type DelayReason struct {
+	Code    int    `json:"code"`
+	Message string `json:"message"`
 }
 
 var (
 	TripDestinationOverride string
-	TripFilter              string
-	TripOutput              string
 )
 
 var tripCmd = &cobra.Command{
@@ -105,9 +105,18 @@ var tripCmd = &cobra.Command{
 			fail(err)
 		}
 
-		if StatusFilter != "" {
-			switch StatusFilter {
-
+		if Filter != "" {
+			switch Filter {
+			case "TRAIN":
+				fmt.Printf("%s", t.Train)
+			case "YOUR DESTINATION":
+				fmt.Printf("%s", t.YourDestination)
+			case "FINAL DESTINATION":
+				fmt.Printf("%s", t.FinalDestination)
+			case "NEXT STOP":
+				fmt.Printf("%s", t.NextStop)
+			case "PROGRESS":
+				fmt.Printf("%s", t.Progress)
 			default:
 				fail(errors.New("unknown filter field"))
 			}
@@ -116,14 +125,14 @@ var tripCmd = &cobra.Command{
 			return
 		}
 
-		if StatusOutput == "table" {
+		if Output == "table" {
 			printer := tableprinter.New(os.Stdout)
 			items := []Trip{t}
 			printer.Print(items)
 			return
 		}
-		if StatusOutput == "csv" {
-			//fmt.Printf("%s,%s,%s,%f,%f,%f,%s\n", s)
+		if Output == "csv" {
+			fmt.Printf("%s,%s,%s,%s,%s\n", t.Train, t.YourDestination, t.FinalDestination, t.NextStop, t.Progress)
 			return
 		}
 
@@ -195,8 +204,6 @@ func refreshTrip() (Trip, error) {
 }
 
 func init() {
-	tripCmd.Flags().StringVarP(&TripDestinationOverride, "destination", "d", "", "Override for your destination")
-	tripCmd.Flags().StringVarP(&TripOutput, "output", "o", "table", "Output format: table or csv")
-	tripCmd.Flags().StringVarP(&TripFilter, "filter", "f", "", "Filter available fields")
+	tripCmd.PersistentFlags().StringVarP(&TripDestinationOverride, "destination", "d", "", "Override for your destination")
 	rootCmd.AddCommand(tripCmd)
 }

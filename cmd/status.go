@@ -29,11 +29,6 @@ type Status struct {
 	TimeMillis uint64 `json:"serverTime"`
 }
 
-var (
-	StatusFilter string
-	StatusOutput string
-)
-
 var statusCmd = &cobra.Command{
 	Use:   "status",
 	Short: "Print train status info",
@@ -44,8 +39,8 @@ var statusCmd = &cobra.Command{
 			fail(err)
 		}
 
-		if StatusFilter != "" {
-			switch StatusFilter {
+		if Filter != "" {
+			switch Filter {
 			case "TRAIN TYPE":
 				fmt.Printf("%s", s.TrainType)
 			case "WAGON CLASS":
@@ -60,19 +55,21 @@ var statusCmd = &cobra.Command{
 				fmt.Printf("%f", s.Longitude)
 			case "GPS":
 				fmt.Printf("%s", s.GPSStatus)
+			default:
+				fail(errors.New("unknown filter field"))
 			}
 
 			fmt.Fprintf(os.Stderr, "\n")
 			return
 		}
 
-		if StatusOutput == "table" {
+		if Output == "table" {
 			printer := tableprinter.New(os.Stdout)
 			items := []Status{s}
 			printer.Print(items)
 			return
 		}
-		if StatusOutput == "csv" {
+		if Output == "csv" {
 			fmt.Printf("%s,%s,%s,%f,%f,%f,%s\n", s.TrainType, s.WagonClass, s.Internet, s.Speed, s.Latitude, s.Longitude, s.GPSStatus)
 			return
 		}
@@ -103,7 +100,5 @@ func refreshStatus() (Status, error) {
 }
 
 func init() {
-	statusCmd.Flags().StringVarP(&StatusOutput, "output", "o", "table", "Output format: table or csv")
-	statusCmd.Flags().StringVarP(&StatusFilter, "filter", "f", "", "Filter available fields")
 	rootCmd.AddCommand(statusCmd)
 }
