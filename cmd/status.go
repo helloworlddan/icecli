@@ -18,20 +18,20 @@ const (
 )
 
 type Status struct {
-	TrainType  string  `header:"Train Type",json:"trainType"`
-	WagonClass string  `header:"Wagon Class",json:"wagonClass"`
-	Internet   string  `header:"Internet",json:"internet"`
-	Speed      float32 `header:"Speed",json:"speed"`
-	Latitude   float32 `header:"Latitude",json:"latitude"`
-	Longitude  float32 `header:"Longitude",json:"longitude"`
-	GPSStatus  string  `header:"GPS",json:"gpsStatus"`
+	TrainType  string  `header:"Train Type" json:"trainType"`
+	WagonClass string  `header:"Wagon Class" json:"wagonClass"`
+	Internet   string  `header:"Internet" json:"internet"`
+	Speed      float32 `header:"Speed" json:"speed"`
+	Latitude   float32 `header:"Latitude" json:"latitude"`
+	Longitude  float32 `header:"Longitude" json:"longitude"`
+	GPSStatus  string  `header:"GPS" json:"gpsStatus"`
 
 	TimeMillis uint64 `json:"serverTime"`
 }
 
 var (
-	Filter string
-	Output string
+	StatusFilter string
+	StatusOutput string
 )
 
 var statusCmd = &cobra.Command{
@@ -44,8 +44,8 @@ var statusCmd = &cobra.Command{
 			fail(err)
 		}
 
-		if Filter != "" {
-			switch Filter {
+		if StatusFilter != "" {
+			switch StatusFilter {
 			case "TRAIN TYPE":
 				fmt.Printf("%s", s.TrainType)
 			case "WAGON CLASS":
@@ -56,7 +56,7 @@ var statusCmd = &cobra.Command{
 				fmt.Printf("%f", s.Speed)
 			case "LATITUDE":
 				fmt.Printf("%f", s.Latitude)
-			case "Longitude":
+			case "LONGITUDE":
 				fmt.Printf("%f", s.Longitude)
 			case "GPS":
 				fmt.Printf("%s", s.GPSStatus)
@@ -66,13 +66,13 @@ var statusCmd = &cobra.Command{
 			return
 		}
 
-		if Output == "table" {
+		if StatusOutput == "table" {
 			printer := tableprinter.New(os.Stdout)
 			items := []Status{s}
 			printer.Print(items)
 			return
 		}
-		if Output == "csv" {
+		if StatusOutput == "csv" {
 			fmt.Printf("%s,%s,%s,%f,%f,%f,%s\n", s.TrainType, s.WagonClass, s.Internet, s.Speed, s.Latitude, s.Longitude, s.GPSStatus)
 			return
 		}
@@ -103,7 +103,7 @@ func refreshStatus() (Status, error) {
 }
 
 func init() {
-	statusCmd.Flags().StringVarP(&Output, "output", "o", "table", "Output format: table or csv")
-	statusCmd.Flags().StringVarP(&Filter, "filter", "f", "", "Filter available fields")
+	statusCmd.Flags().StringVarP(&StatusOutput, "output", "o", "table", "Output format: table or csv")
+	statusCmd.Flags().StringVarP(&StatusFilter, "filter", "f", "", "Filter available fields")
 	rootCmd.AddCommand(statusCmd)
 }
