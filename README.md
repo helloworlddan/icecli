@@ -1,10 +1,10 @@
 # icecli
-
-## Installation
-Grab the appropriate archive from the releases section of this repo, extract it, move the included binary somewhere on your $PATH and make it executable.
+icecli is a tool to query on-train ICE API endpoints for real-time information about train and journey.
 
 ## Usage
 In order to use the tool you have to be on a German ICE train and connected to the onboard WiFi SSID `WIFIonICE`.
+
+![Usage of the tool](assets/icecli.gif)
 
 ```bash
 # Get help
@@ -28,3 +28,5 @@ $ icecli trip -d "Berlin Hbf (tief)" -o csv
 # Change output format to CSV and filter for only ETA to your destination override
 $ icecli trip -d "Berlin Hbf (tief)" -o csv -f "ARRIVING"
 ```
+## Installation
+Grab the appropriate archive from the releases section of this repo, extract it, move the included binary somewhere on your $PATH and make it executable.
