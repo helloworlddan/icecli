@@ -37,8 +37,8 @@ func fail(err error) {
 }
 
 func init() {
-	tripCmd.PersistentFlags().StringVarP(&Output, "output", "o", "table", "Output format: table or csv")
-	tripCmd.PersistentFlags().StringVarP(&Filter, "filter", "f", "", "Filter available fields")
+	rootCmd.PersistentFlags().StringVarP(&Output, "output", "o", "table", "Output format: table or csv")
+	rootCmd.PersistentFlags().StringVarP(&Filter, "filter", "f", "", "Filter available fields")
 }
 
 func unixMillisToTime(millis uint64) time.Time {
