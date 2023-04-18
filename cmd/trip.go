@@ -93,13 +93,11 @@ type Info struct {
 }
 
 type DelayReason struct {
-	Code    int    `json:"code"`
+	Code    string `json:"code"`
 	Message string `json:"message"`
 }
 
-var (
-	TripDestinationOverride string
-)
+var TripDestinationOverride string
 
 var tripCmd = &cobra.Command{
 	Use:   "trip",
